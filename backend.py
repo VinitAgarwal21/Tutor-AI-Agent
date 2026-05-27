@@ -108,7 +108,7 @@ class State(TypedDict):
 # 2) LLM
 # -----------------------------
 llm = ChatGoogleGenerativeAI(
-    model="gemini-3.5-flash",
+    model="gemini-3.1-flash-lite",
     google_api_key=os.getenv("GOOGLE_API_KEY")
 )
 # -----------------------------
@@ -340,7 +340,7 @@ def worker_node(payload: dict) -> dict:
         for e in evidence[:20]
     )
 
-    section_md = llm.invoke(
+    response= llm.invoke(
         [
             SystemMessage(content=WORKER_SYSTEM),
             HumanMessage(
@@ -376,7 +376,7 @@ def worker_node(payload: dict) -> dict:
     else:
         section_md = str(response.content)
 
-        section_md = section_md.strip()
+    section_md = section_md.strip()
 
     return {"sections": [(task.id, section_md)]}
 
@@ -533,80 +533,236 @@ def _safe_slug(title: str) -> str:
 
 
 from duckduckgo_search import DDGS
+import requests
+from urllib.parse import quote
+
+def simplify_image_query(text: str) -> str:
+
+    text = text.lower()
+
+    important_terms = [
+        "linear regression",
+        "svm",
+        "pipeline",
+        "cross validation",
+        "neural network",
+        "backpropagation",
+        "cnn",
+        "transformer",
+        "attention",
+        "machine learning",
+        "deep learning",
+        "flowchart",
+        "diagram",
+        "architecture",
+        "classification",
+        "regression",
+        "llm",
+        "rag",
+    ]
+
+    found = []
+
+    for term in important_terms:
+
+        if term in text:
+            found.append(term)
+
+    if found:
+        return " ".join(found[:3])
+
+    # fallback
+    words = text.split()
+
+    return " ".join(words[:5])
+
+from urllib.parse import quote
+
 
 def fetch_related_image(query: str):
-    """
-    Fetch a related image URL from DuckDuckGo Images.
-    """
+
     try:
-        with DDGS() as ddgs:
-            results = list(
-                ddgs.images(
-                    keywords=query,
-                    max_results=1
-                )
-            )
 
-        if not results:
-            return None
+        query = quote(query)
 
-        img = results[0]
+        # Direct image endpoint
+        image_url = (
+            f"https://source.unsplash.com/1600x900/?{query}"
+        )
 
         return {
-            "image_url": img.get("image"),
-            "source_url": img.get("url"),
-            "title": img.get("title", "Image Source")
+            "image_url": image_url,
+            "source_url": (
+                f"https://unsplash.com/s/photos/{query}"
+            ),
+            "title": query,
         }
 
     except Exception as e:
+
         print("Image fetch error:", e)
+
         return None
+    
+# def download_image(image_url: str, save_path: Path) -> bool:
+
+#     try:
+
+#         headers = {
+#             "User-Agent": (
+#                 "Mozilla/5.0 "
+#                 "(Windows NT 10.0; Win64; x64)"
+#             )
+#         }
+
+#         response = requests.get(
+#             image_url,
+#             headers=headers,
+#             timeout=20,
+#             stream=True,
+#             allow_redirects=True,
+#         )
+
+#         if response.status_code != 200:
+#             print("Bad status:", response.status_code)
+#             return False
+
+#         with open(save_path, "wb") as f:
+
+#             for chunk in response.iter_content(1024):
+
+#                 if chunk:
+#                     f.write(chunk)
+
+#         return True
+
+#     except Exception as e:
+#         print("Download error:", e)
+#         return False
 
 
 def generate_and_place_images(state: State) -> dict:
+
     plan = state["plan"]
     assert plan is not None
 
-    md = state.get("md_with_placeholders") or state["merged_md"]
-    image_specs = state.get("image_specs", []) or []
+    md = (
+        state.get("md_with_placeholders")
+        or state["merged_md"]
+    )
 
-    # No images needed
+    image_specs = (
+        state.get("image_specs", [])
+        or []
+    )
+
+    # No images requested
     if not image_specs:
+
         filename = f"{_safe_slug(plan.blog_title)}.md"
-        Path(filename).write_text(md, encoding="utf-8")
+
+        Path(filename).write_text(
+            md,
+            encoding="utf-8"
+        )
+
         return {"final": md}
 
     for spec in image_specs:
 
-        placeholder = spec["placeholder"]
+        placeholder = spec.get("placeholder", "")
 
-        # Search query
-        search_query = spec.get("prompt") or spec.get("caption")
+        # Build search query
+        raw_query = (
+            spec.get("prompt")
+            or spec.get("caption")
+            or spec.get("alt")
+            or "technology"
+        )
 
-        img_data = fetch_related_image(search_query)
+        search_query = simplify_image_query(
+            raw_query
+        )
 
+        # Fetch image
+        img_data = fetch_related_image(
+            search_query
+        )
+
+        # Fallback if image fetch fails
         if not img_data:
+
             fallback = (
-                f"\n> Image could not be fetched for: "
-                f"{search_query}\n"
+                f"\n> Image unavailable "
+                f"for: {search_query}\n"
             )
 
-            md = md.replace(placeholder, fallback)
+            md = md.replace(
+                placeholder,
+                fallback
+            )
+
             continue
 
+        image_url = img_data.get("image_url")
+
+        # Invalid URL fallback
+        if (
+            not image_url
+            or not isinstance(image_url, str)
+            or not image_url.startswith("http")
+        ):
+
+            fallback = (
+                f"\n> Invalid image URL "
+                f"for: {search_query}\n"
+            )
+
+            md = md.replace(
+                placeholder,
+                fallback
+            )
+
+            continue
+
+        alt_text = (
+            spec.get("alt")
+            or search_query
+        )
+
+        caption = (
+            spec.get("caption")
+            or ""
+        )
+
+        source_url = img_data.get(
+            "source_url",
+            "Unknown source"
+        )
+
+        # Markdown block
         image_markdown = f"""
-![{spec['alt']}]({img_data['image_url']})
+![{alt_text}]({image_url})
 
-*{spec['caption']}*
+*{caption}*
 
-Source: {img_data['source_url']}
+Source: {source_url}
 """
 
-        md = md.replace(placeholder, image_markdown)
+        md = md.replace(
+            placeholder,
+            image_markdown
+        )
 
-    filename = f"{_safe_slug(plan.blog_title)}.md"
+    # Save final markdown
+    filename = (
+        f"{_safe_slug(plan.blog_title)}.md"
+    )
 
-    Path(filename).write_text(md, encoding="utf-8")
+    Path(filename).write_text(
+        md,
+        encoding="utf-8"
+    )
 
     return {"final": md}
 
