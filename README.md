@@ -156,6 +156,11 @@ In `open_book` mode, claims not backed by evidence URLs are flagged as *"Not fou
 
 ---
 
+
+## Demo
+ 
+https://github.com/user-attachments/assets/AI_Notes_Generation_Agent_-_Demo_Video.mp4
+
 ## Notes & Limitations
 
 - The LLM used is `gemini-3.1-flash-lite` (configurable in `backend.py`).
