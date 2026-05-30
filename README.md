@@ -160,23 +160,28 @@ In `open_book` mode, claims not backed by evidence URLs are flagged as *"Not fou
 ## Demo
 
 https://github.com/VinitAgarwal21/Tutor-AI-Agent/blob/main/assets/Screenshot%201.png
+<img width="1920" height="1080" alt="Screenshot (205)" src="https://github.com/user-attachments/assets/76ccd2b3-6939-485b-a4f5-a9a6b1286cc8" />
 
 
 
 https://github.com/VinitAgarwal21/Tutor-AI-Agent/blob/main/assets/Screenshot%202.png
+<img width="1920" height="1080" alt="Screenshot (206)" src="https://github.com/user-attachments/assets/434d572c-5de8-4e97-9bd8-289cca17ff75" />
 
 
 
 https://github.com/VinitAgarwal21/Tutor-AI-Agent/blob/main/assets/Screenshot%203.png
+<img width="1920" height="1080" alt="Screenshot (209)" src="https://github.com/user-attachments/assets/d13346cd-ba09-443b-80ec-7950e55889a8" />
 
 
 
 https://github.com/VinitAgarwal21/Tutor-AI-Agent/blob/main/assets/Screenshot%204.png
+<img width="1920" height="1080" alt="Screenshot (210)" src="https://github.com/user-attachments/assets/12acb972-b206-4002-b84b-e826d30c4131" />
 
 
 
 https://github.com/VinitAgarwal21/Tutor-AI-Agent/blob/main/assets/Screenshot%205.png
- 
+ <img width="1920" height="1080" alt="Screenshot (211)" src="https://github.com/user-attachments/assets/3e4b100c-3f2c-4b80-86c0-1871cbc49322" />
+
 https://github.com/VinitAgarwal21/Tutor-AI-Agent/blob/main/assets/AI%20Notes%20Generation%20Agent%20-%20Demo%20Video.mp4
 
 ## Notes & Limitations
