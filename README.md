@@ -159,7 +159,7 @@ In `open_book` mode, claims not backed by evidence URLs are flagged as *"Not fou
 
 ## Demo
  
-https://github.com/user-attachments/assets/AI_Notes_Generation_Agent_-_Demo_Video.mp4
+https://github.com/VinitAgarwal21/Tutor-AI-Agent/blob/main/assets/AI%20Notes%20Generation%20Agent%20-%20Demo%20Video.mp4
 
 ## Notes & Limitations
 
