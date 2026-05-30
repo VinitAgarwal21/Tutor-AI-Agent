@@ -158,6 +158,24 @@ In `open_book` mode, claims not backed by evidence URLs are flagged as *"Not fou
 
 
 ## Demo
+
+https://github.com/VinitAgarwal21/Tutor-AI-Agent/blob/main/assets/Screenshot%201.png
+
+
+
+https://github.com/VinitAgarwal21/Tutor-AI-Agent/blob/main/assets/Screenshot%202.png
+
+
+
+https://github.com/VinitAgarwal21/Tutor-AI-Agent/blob/main/assets/Screenshot%203.png
+
+
+
+https://github.com/VinitAgarwal21/Tutor-AI-Agent/blob/main/assets/Screenshot%204.png
+
+
+
+https://github.com/VinitAgarwal21/Tutor-AI-Agent/blob/main/assets/Screenshot%205.png
  
 https://github.com/VinitAgarwal21/Tutor-AI-Agent/blob/main/assets/AI%20Notes%20Generation%20Agent%20-%20Demo%20Video.mp4
 
